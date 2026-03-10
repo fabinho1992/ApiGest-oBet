@@ -20,6 +20,31 @@ namespace App_Bets.Infrastructure.Repository
             _context = context;
         }
 
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas, int totalCount)> GetBilhetesPorCasaAposta(string email, CasaAposta casaAposta, int pageNumer, int pageSize)
+        {
+            var query = _context.Bilhetes
+                .Include(b => b.Usuario)
+                .Where(b =>
+                    b.Usuario.Email == email &&
+                    b.CasaAposta == casaAposta);
+
+            var totalCount = query.Count();
+
+            var items = await query
+                .OrderByDescending(b => b.DataAposta)
+                .Skip((pageNumer - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var totalPaginas = (int)Math.Ceiling(
+                (double)totalCount / pageSize
+                    );
+
+            return (items, totalPaginas, totalCount);
+
+
+        }
+
         public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorData(string email, DateTime data, int pageNumer, int pageSize)
         {
             var dataInicio = data.Date;
@@ -96,6 +121,49 @@ namespace App_Bets.Infrastructure.Repository
                 TotalInvestido = totalInvestido,
                 Prejuizo = prejuizoTotal
             };
+        }
+
+        public async Task<List<CasaApostaResumo>> GetResumoCasas(string email)
+        {
+            return await _context.Bilhetes
+                .Where(b => b.Usuario.Email == email)
+                .GroupBy(b => b.CasaAposta)
+                .Select(g => new CasaApostaResumo
+                {
+                    CasaAposta = g.Key,
+                    Quantidade = g.Count()
+                })
+                .ToListAsync();
+        }
+
+
+        public async Task DeleteAll(string email)
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            var bilhetes = _context.Bilhetes.Where(b => b.UsuarioId == usuario.Id);
+
+            _context.Bilhetes.RemoveRange(bilhetes);
+
+        }
+
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorStatus(string email, StatusEnum status, int pageNumer, int pageSize)
+        {
+            var query = _context.Bilhetes.Include(b => b.Usuario)
+                .Where(b => b.Usuario.Email == email && b.Status == status);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pageNumer - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var totalPaginas = (int)Math.Ceiling(
+                (double)totalCount / pageSize
+                    );
+
+            return (items, totalPaginas);
+
         }
     }
 }

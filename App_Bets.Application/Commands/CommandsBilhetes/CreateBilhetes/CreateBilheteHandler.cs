@@ -37,8 +37,10 @@ namespace App_Bets.Application.Commands.CommandsBilhetes.CreateBilhetes
 
             var bilhete = new Bilhete(request.Odd, request.ValorApostado, request.TipoBanca, request.StatusEnum)
             {
-                UsuarioId = Guid.Parse(userId)
+                UsuarioId = Guid.Parse(userId),
+                
             };
+            bilhete.AtualizarCasaAposta(request.CasaAposta);
 
             await _unitOfWork.BilheteRepositorio.Add(bilhete);
             await _unitOfWork.Commit();

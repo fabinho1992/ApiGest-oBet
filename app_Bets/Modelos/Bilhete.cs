@@ -15,6 +15,7 @@ namespace App_Bets.Domain.Modelos
             ValorApostado = valorApostado;
             TipoBanca = tipoBanca;
             Status = status;
+            CasaAposta = CasaAposta.Betano; 
             ValorRetornado = CalcularValorRetorno();
             DataAposta = DateTime.Now;
         }
@@ -24,6 +25,7 @@ namespace App_Bets.Domain.Modelos
         public double Odd { get; private set; }
         public StatusEnum Status { get; set; }
         public TipoBanca TipoBanca { get; set; }
+        public CasaAposta CasaAposta { get; private set; }
 
         public double ValorApostado { get; private set; }
         public double ValorRetornado { get; private set; }
@@ -39,6 +41,11 @@ namespace App_Bets.Domain.Modelos
         public void AtualizarStatus(StatusEnum novoStatus)
         {
             Status = novoStatus;
+        }
+
+        public void AtualizarCasaAposta(CasaAposta novaCasaAposta)
+        {
+            CasaAposta = novaCasaAposta;
         }
 
     }

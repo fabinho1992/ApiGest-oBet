@@ -10,5 +10,8 @@ namespace App_Bets.Domain.Enuns
     {
         Betano = 1,
         Bet365 = 2,
+        SuperBet = 3,
+        SportingBet = 4,
+
     }
 }

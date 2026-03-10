@@ -36,6 +36,8 @@ namespace App_Bets.Application.Profiles
             .ForMember(dest => dest.UsuarioNome,
                 opt => opt.MapFrom(src => src.Usuario.DisplayName));
 
+            CreateMap<CasaApostaResumo, CasaApostaResumoDto>().ReverseMap();
+
         }
     }
 }

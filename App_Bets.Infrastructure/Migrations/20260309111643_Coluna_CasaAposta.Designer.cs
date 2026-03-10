@@ -4,6 +4,7 @@ using App_Bets.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App_Bets.Infrastructure.Migrations
 {
     [DbContext(typeof(BetDbContext))]
-    partial class BetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309111643_Coluna_CasaAposta")]
+    partial class Coluna_CasaAposta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
