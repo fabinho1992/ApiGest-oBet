@@ -3,7 +3,7 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore
+RUN dotnet restore app_bets.sln
 RUN dotnet publish App_Bets.Api/App_Bets.Api.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,8 +39,11 @@ namespace App_Bets.Extensions
         public static IServiceCollection AddContextAppBet(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
+            //services.AddDbContext<BetDbContext>(options =>
+            // options.UseSqlServer(connectionString));
+
             services.AddDbContext<BetDbContext>(options =>
-             options.UseSqlServer(connectionString));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
