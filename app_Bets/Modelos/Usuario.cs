@@ -18,7 +18,7 @@ namespace App_Bets.Domain.Modelos
             Email = email;
             BancaInicial = bancaInicial;
             MetaBanca = metaBanca;
-            DataCriacao = DateTime.Now;
+            DataCriacao = DateTime.UtcNow;
             BancaAtual = bancaInicial;
         }
 

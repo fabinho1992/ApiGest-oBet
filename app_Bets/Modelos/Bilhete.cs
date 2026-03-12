@@ -17,7 +17,7 @@ namespace App_Bets.Domain.Modelos
             Status = status;
             CasaAposta = CasaAposta.Betano; 
             ValorRetornado = CalcularValorRetorno();
-            DataAposta = DateTime.Now;
+            DataAposta = DateTime.UtcNow;
         }
 
         public Guid Id { get; private set; }
