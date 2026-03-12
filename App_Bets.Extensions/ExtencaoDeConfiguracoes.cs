@@ -117,10 +117,13 @@ namespace App_Bets.Extensions
             {
                 options.AddPolicy("AllowNextJS",
                     policy => policy
-                        .WithOrigins("http://localhost:3000") // URL do seu Next.js
+                        .WithOrigins(
+                            "http://localhost:3000",
+                            "https://app-betmanager-front.vercel.app"
+                        )
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials()); // Se usar cookies/auth
+                        .AllowCredentials());
             });
 
             return services;
