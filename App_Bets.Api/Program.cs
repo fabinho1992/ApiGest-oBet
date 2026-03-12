@@ -65,12 +65,10 @@ var app = builder.Build();
 
 app.UseCors("AllowNextJS");
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseMiddleware(typeof(ErroMiddleware));
 
