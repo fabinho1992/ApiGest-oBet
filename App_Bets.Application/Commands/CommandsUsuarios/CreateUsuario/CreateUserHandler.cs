@@ -32,23 +32,18 @@ namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
             await _unitOfWork.UsuarioRepositorio.Add(usuario);
             await _unitOfWork.Commit();
 
-            var identityUser = new ApplicationUser
-            {
-                UserName = request.Email,
-                Email = request.Email,
-                UsuarioId = usuario.Id
-            };
-
             var registerUser = new RegisterUser(request.DisplayName, request.Email, request.Password, usuario.Id);
-
             var result = await _createUser.CreateUserAsync(registerUser);
 
-            if (result.Status == "Erro" )
+            // Se falhou na criação do usuário identity
+            if (result.Status == "Erro")
             {
                 return ResultViewModel<Guid>.Error("Falha ao criar usuário identity");
             }
 
-            return new ResultViewModel<Guid>(usuario.Id);
+            // Sucesso → retorna Id do usuário
+            return ResultViewModel<Guid>.Success(usuario.Id);
         }
     }
+    
 }
