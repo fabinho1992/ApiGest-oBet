@@ -14,13 +14,19 @@ namespace App_Bets.ErrosMiddleware
 
         public async Task Invoke(HttpContext context)
         {
+            // Se for preflight OPTIONS, deixa passar
+            if (context.Request.Method == HttpMethods.Options)
+            {
+                await next(context);
+                return;
+            }
+
             try
             {
                 await next(context);
             }
             catch (Exception ex)
             {
-
                 await HandleExceptionAsync(context, ex);
             }
         }
