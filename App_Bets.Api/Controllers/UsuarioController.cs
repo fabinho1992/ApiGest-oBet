@@ -25,13 +25,11 @@ namespace App_Bets.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUsuario([FromBody] CreateUserCommand command)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var result = await _mediator.Send(command);
 
             // Garante que result é do tipo correto
-            if (result is ResultViewModel<Guid> typedResult)
+            if (result is ResultViewModel typedResult)
             {
                 if (!typedResult.IsSuccess)
                     return BadRequest(typedResult.Message);

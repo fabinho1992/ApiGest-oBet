@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
 {
-    public class CreateUserCommand : IRequest<ResultViewModel<Guid>>
+    public class CreateUserCommand : IRequest<ResultViewModel>
     {
         public CreateUserCommand(string displayName, string cpf, string email, double bancaInicial, double metaBanca, string password)
         {

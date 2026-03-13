@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
 {
-    public class CreateUserHandler : IRequestHandler<CreateUserCommand, ResultViewModel<Guid>>
+    public class CreateUserHandler : IRequestHandler<CreateUserCommand, ResultViewModel>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
             _createUser = createUser;
         }
 
-        public async Task<ResultViewModel<Guid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task<ResultViewModel> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             var usuario = _mapper.Map<Usuario>(request);
             await _unitOfWork.UsuarioRepositorio.Add(usuario);
@@ -38,11 +38,11 @@ namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
             // Se falhou na criação do usuário identity
             if (result.Status == "Erro")
             {
-                return ResultViewModel<Guid>.Error("Falha ao criar usuário identity");
+                return ResultViewModel.Error("Falha ao criar usuário identity");
             }
 
             // Sucesso → retorna Id do usuário
-            return ResultViewModel<Guid>.Success(usuario.Id);
+            return ResultViewModel.Success();
         }
     }
     
