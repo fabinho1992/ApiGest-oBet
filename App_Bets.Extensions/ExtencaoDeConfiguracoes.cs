@@ -115,15 +115,16 @@ namespace App_Bets.Extensions
             //Cors
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowNextJS",
-                    policy => policy
-                        .WithOrigins(
-                            "http://localhost:3000",
-                            "https://app-betmanager-front.vercel.app"
-                        )
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials());
+                options.AddPolicy("AllowNextJS", policy =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:3000",
+                        "https://app-bet-manager-front.vercel.app"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
             });
 
             return services;
