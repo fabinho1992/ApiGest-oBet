@@ -1,4 +1,4 @@
-
+﻿
 using App_Bets.ErrosMiddleware;
 using App_Bets.Extensions;
 using Microsoft.OpenApi.Models;
@@ -24,7 +24,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Version = "V1",
         Title = "Sistema de controle de apostas esportivas",
-        Description = "Api que gerencia gest�o de apostas, para que o usuario tenha controel sobre seus ganhos",
+        Description = "Api que gerencia gestão de apostas, para que o usuario tenha controel sobre seus ganhos",
         Contact = new OpenApiContact
         {
             Name = "Fabio dos Santos",
@@ -63,12 +63,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseCors("AllowNextJS");
-
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware(typeof(ErroMiddleware));
 
@@ -77,12 +73,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-
-app.UseRouting();      
-
-app.UseAuthentication(); 
-
-app.UseAuthorization();    
+app.UseRouting();      // ❌ importante: UseRouting antes do UseCors
+app.UseCors("AllowNextJS"); // ✅ deve vir aqui
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
