@@ -1,4 +1,5 @@
 ﻿using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
+using App_Bets.Application.Dtos;
 using App_Bets.Application.Queries.Usuario.UsuarioPeloCpf;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,19 +26,22 @@ namespace App_Bets.Api.Controllers
         public async Task<IActionResult> CreateUsuario([FromBody] CreateUserCommand command)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var result = await _mediator.Send(command);
 
-            if (!result.IsSuccess)
+            // Garante que result é do tipo correto
+            if (result is ResultViewModel<Guid> typedResult)
             {
-                return BadRequest(result.Message);
+                if (!typedResult.IsSuccess)
+                    return BadRequest(typedResult.Message);
+
+                _logger.LogInformation("Usuário criado com sucesso: {Email}", command.Email);
+                return Ok(typedResult);
             }
 
-            _logger.LogInformation("Usuário criado com sucesso: {Email}", command.Email);
-            return Ok(result);
+            // fallback caso venha algo inesperado
+            return StatusCode(500, "Erro inesperado no retorno do handler");
         }
 
         [HttpGet("cpf")]
