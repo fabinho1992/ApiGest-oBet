@@ -3,6 +3,7 @@ using App_Bets.Domain.IRepositorio;
 using App_Bets.Domain.IServices.Autentication;
 using App_Bets.Domain.Modelos;
 using App_Bets.Domain.ModelsAutentication;
+using App_Bets.Domain.Services.EmailServices;
 using AutoMapper;
 using MediatR;
 using System;
@@ -18,12 +19,14 @@ namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ICreateUser _createUser;
+        private readonly ISendEmail _sendEmail;
 
-        public CreateUserHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateUser createUser)
+        public CreateUserHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateUser createUser, ISendEmail sendEmail)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _createUser = createUser;
+            _sendEmail = sendEmail;
         }
 
         public async Task<ResultViewModel> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,15 @@ namespace App_Bets.Application.Commands.CommandsUser.CreateUsuario
             if (result.Status == "Erro")
             {
                 return ResultViewModel.Error("Falha ao criar usuário identity");
+            }
+
+            try
+            {
+                await _sendEmail.SendEmailConfirmation(usuario);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao enviar email: {ex.Message}");
             }
 
             // Sucesso → retorna Id do usuário

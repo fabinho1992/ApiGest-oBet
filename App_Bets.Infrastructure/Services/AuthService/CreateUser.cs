@@ -29,6 +29,7 @@ namespace BookReviewManager.Infrastructure.Service.Identity
             }
             ApplicationUser user = new()
             {
+                DisplayName = registerUser.UserName,
                 UserName = registerUser.Email,
                 Email = registerUser.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),

@@ -11,5 +11,8 @@ namespace App_Bets.Domain.Modelos
     {
         public Guid UsuarioId { get; set; }
         public virtual Usuario Usuario { get; set; }
+        public string DisplayName { get; set; }
+        public string ResetToken { get; set; } = string.Empty;
+        public DateTimeOffset ResetTokenExpiration { get; set; }
     }
 }

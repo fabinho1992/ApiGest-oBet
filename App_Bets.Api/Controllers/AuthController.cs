@@ -1,4 +1,7 @@
 ﻿using App_Bets.Application.Commands.CommandsAuth.CommandLogin;
+using App_Bets.Application.Commands.CommandsResetPassword.CommandChangePassword;
+using App_Bets.Application.Commands.CommandsResetPassword.CommandResetPassword;
+using App_Bets.Application.Commands.CommandsResetPassword.CommandValidateCode;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +21,60 @@ namespace App_Bets.Api.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _mediator.Send(command);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword(ResetCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _mediator.Send(command);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("ResetPasswordValidate")]
+        public async Task<IActionResult> ResetPassword(ValidateCodeCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _mediator.Send(command);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("resetpasswordchange")]
+        public async Task<IActionResult> ResetPassword(ChangePasswordCommand command)
         {
             if (!ModelState.IsValid)
             {

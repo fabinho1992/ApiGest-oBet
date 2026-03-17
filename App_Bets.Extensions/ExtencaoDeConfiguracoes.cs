@@ -5,10 +5,13 @@ using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
 using App_Bets.Application.FluentValidation;
 using App_Bets.Application.FluentValidation.Bilhete;
 using App_Bets.Application.FluentValidation.Usuario;
+using App_Bets.Application.ServiceEmail.EmailServices;
+using App_Bets.Application.Services.EmailServices;
 using App_Bets.Domain.IRepositorio;
 using App_Bets.Domain.IServices.Autentication;
 using App_Bets.Domain.Modelos;
 using App_Bets.Domain.Services;
+using App_Bets.Domain.Services.EmailServices;
 using App_Bets.Infrastructure.ApiExterna;
 using App_Bets.Infrastructure.Context;
 using App_Bets.Infrastructure.Repository;
@@ -65,7 +68,9 @@ namespace App_Bets.Extensions
             services.AddScoped<ILoginUser, LoginUser>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAddRole, AddRole>();
-
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ISendEmail, SendEmail>();
+            //services.AddHttpClient<IEmailService, EmailService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddHttpContextAccessor();
