@@ -1,7 +1,10 @@
 ﻿
 using App_Bets.ErrosMiddleware;
 using App_Bets.Extensions;
+using App_Bets.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +83,27 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Aplicar migrations automaticamente
+var applyMigrationsOnStartup = builder.Configuration.GetValue<bool>("ApplyMigrationsOnStartup");
+
+if (app.Environment.IsDevelopment() || applyMigrationsOnStartup)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var dbContext = services.GetRequiredService<BetDbContext>();
+        dbContext.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Erro ao aplicar migrations na inicialização da aplicação.");
+    }
+}
+
+
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Run($"http://0.0.0.0:{port}");
-//app.Run();
+//app.Run($"http://0.0.0.0:{port}");
+app.Run();

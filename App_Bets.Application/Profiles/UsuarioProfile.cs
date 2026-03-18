@@ -1,4 +1,5 @@
 ﻿using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
+using App_Bets.Application.Commands.CommandsUsuarios.UpdateUsuario;
 using App_Bets.Application.Dtos.Usuarios;
 using App_Bets.Domain.Modelos;
 using AutoMapper;
@@ -25,6 +26,7 @@ namespace App_Bets.Application.Profiles
                 ));
 
             CreateMap<Usuario, UsuarioDetalhado>();
+            CreateMap<Usuario, UpdateUserCommand>().ReverseMap();
         }
     }
 }

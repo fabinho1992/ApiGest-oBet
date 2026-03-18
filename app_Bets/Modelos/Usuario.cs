@@ -36,6 +36,24 @@ namespace App_Bets.Domain.Modelos
 
         protected Usuario() { }
 
-        
+
+        public void DebitarPerda(double valor)
+        {
+            BancaAtual -= valor;
+        }
+
+        public void CreditarGanho(double valor)
+        {
+            BancaAtual += valor;
+        }
+
+        public void UpdateUsuario(string? displayName, string? email, double bancaInicial, double metaBanca)
+        {
+            DisplayName = displayName;
+            Email = email;
+            BancaInicial = bancaInicial;
+            MetaBanca = metaBanca;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using App_Bets.Application.Dtos;
+using App_Bets.Domain.Enuns;
 using App_Bets.Domain.IRepositorio;
 using App_Bets.Domain.Modelos;
 using App_Bets.Domain.Services;
@@ -32,16 +33,27 @@ namespace App_Bets.Application.Commands.CommandsBilhetes.CreateBilhetes
         {
             var userId = _usuarioContext.UserId;
 
-            if (string.IsNullOrEmpty(userId))
+            var usuario = await _unitOfWork.UsuarioRepositorio.GetById(Guid.Parse(userId));
+
+            if (string.IsNullOrEmpty(userId) || usuario is null)
                 return ResultViewModel<Guid>.Error("Usuário não autenticado");
 
             var bilhete = new Bilhete(request.Odd, request.ValorApostado, request.TipoBanca, request.StatusEnum)
             {
-                UsuarioId = Guid.Parse(userId),
-                
+                UsuarioId = Guid.Parse(userId)
             };
             bilhete.AtualizarCasaAposta(request.CasaAposta);
+            double lucro = bilhete.ValorRetornado - bilhete.ValorApostado;
 
+            if(bilhete.Status == StatusEnum.Ganha)
+            {
+                usuario.CreditarGanho(lucro);
+            }else if(bilhete.Status == StatusEnum.Perdida)
+            {
+                usuario.DebitarPerda(bilhete.ValorApostado);
+            }
+
+            await _unitOfWork.UsuarioRepositorio.Update(usuario);
             await _unitOfWork.BilheteRepositorio.Add(bilhete);
             await _unitOfWork.Commit();
 
