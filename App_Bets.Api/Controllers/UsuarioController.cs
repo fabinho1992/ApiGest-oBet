@@ -63,5 +63,20 @@ namespace App_Bets.Api.Controllers
         {
             return Ok("OK");
         }
+
+        [HttpGet("email")]
+        [Authorize]
+        public async Task<IActionResult> GetByEmail([FromQuery] string cpf)
+        {
+            var query = new UsuarioCpfQuery(cpf);
+
+            var result = await _mediator.Send(query);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
+        }
     }
 }
