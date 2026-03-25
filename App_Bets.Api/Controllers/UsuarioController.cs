@@ -1,5 +1,6 @@
 ﻿using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
 using App_Bets.Application.Dtos;
+using App_Bets.Application.Queries.Usuario.UsuarioEmail;
 using App_Bets.Application.Queries.Usuario.UsuarioPeloCpf;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -66,9 +67,9 @@ namespace App_Bets.Api.Controllers
 
         [HttpGet("email")]
         [Authorize]
-        public async Task<IActionResult> GetByEmail([FromQuery] string cpf)
+        public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {
-            var query = new UsuarioCpfQuery(cpf);
+            var query = new UsuarioEmailQuery();
 
             var result = await _mediator.Send(query);
             if (!result.IsSuccess)

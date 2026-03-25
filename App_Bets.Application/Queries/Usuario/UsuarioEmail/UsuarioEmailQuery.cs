@@ -11,11 +11,5 @@ namespace App_Bets.Application.Queries.Usuario.UsuarioEmail
 {
     public class UsuarioEmailQuery : IRequest<ResultViewModel<UsuarioDetalhado>>
     {
-        public string Email { get; set; }
-
-        public UsuarioEmailQuery(string email)
-        {
-            Email = email;
-        }
     }
 }
