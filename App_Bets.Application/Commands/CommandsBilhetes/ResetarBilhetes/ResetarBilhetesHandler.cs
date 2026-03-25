@@ -28,8 +28,12 @@ namespace App_Bets.Application.Commands.CommandsBilhetes.ResetarBilhetes
             if (string.IsNullOrEmpty(email))
                 return ResultViewModel<bool>.Error("Usuário não autenticado");
 
-            await _unitOfWork.BilheteRepositorio.DeleteAll(email);
+            var usuario = await _unitOfWork.UsuarioRepositorio.GetUsuaioEmail(email); 
 
+            await _unitOfWork.BilheteRepositorio.DeleteAll(email);
+            usuario.ZerarBanca();
+
+            await _unitOfWork.UsuarioRepositorio.Update(usuario);
             await _unitOfWork.Commit();
 
             return ResultViewModel<bool>.Success(true);

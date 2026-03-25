@@ -25,19 +25,16 @@ namespace App_Bets.Application.Commands.CommandsUsuarios.UpdateUsuario
 
         public async Task<ResultViewModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var userId = _usuarioContext.UserId;
+            var emailUser = _usuarioContext.Email;
 
-            if (string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(emailUser))
                 return ResultViewModel.Error("Usuário não autenticado.");
 
-            if (!Guid.TryParse(userId, out var usuarioId))
-                return ResultViewModel.Error("Usuário inválido.");
-
-            var usuario = await _unitOfWork.UsuarioRepositorio.GetById(usuarioId);
+            var usuario = await _unitOfWork.UsuarioRepositorio.GetUsuaioEmail(emailUser);
             if (usuario is null)
                 return ResultViewModel.Error("Usuário não encontrado.");
 
-            var userIdentity = await _userManager.FindByIdAsync(userId);
+            var userIdentity = await _userManager.FindByEmailAsync(emailUser);
             if (userIdentity is null)
                 return ResultViewModel.Error("Usuário do Identity não encontrado.");
 

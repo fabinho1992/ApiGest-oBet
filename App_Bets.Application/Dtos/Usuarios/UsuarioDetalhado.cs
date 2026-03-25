@@ -14,6 +14,7 @@ namespace App_Bets.Application.Dtos.Usuarios
         public string DisplayName { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public string BancaInicial { get; set; }
         public double BancaAtual { get; set; }
         public double MetaBanca { get; set; }
         public string DataCriacao { get; set; }

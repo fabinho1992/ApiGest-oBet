@@ -1,4 +1,6 @@
-﻿using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
+﻿using App_Bets.Application.Commands.CommandsBilhetes.UpdateStatus;
+using App_Bets.Application.Commands.CommandsUser.CreateUsuario;
+using App_Bets.Application.Commands.CommandsUsuarios.UpdateUsuario;
 using App_Bets.Application.Dtos;
 using App_Bets.Application.Queries.Usuario.UsuarioEmail;
 using App_Bets.Application.Queries.Usuario.UsuarioPeloCpf;
@@ -78,6 +80,25 @@ namespace App_Bets.Api.Controllers
             }
 
             return Ok(result);
+        }
+
+
+        [HttpPut("updateUser")]
+        public async Task<IActionResult> Update(UpdateUserCommand updateUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _mediator.Send(updateUser);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok();
         }
     }
 }

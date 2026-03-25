@@ -55,5 +55,10 @@ namespace App_Bets.Domain.Modelos
             MetaBanca = metaBanca;
         }
 
+        public void ZerarBanca() 
+        {
+            BancaAtual = BancaInicial;
+        }
+
     }
 }
