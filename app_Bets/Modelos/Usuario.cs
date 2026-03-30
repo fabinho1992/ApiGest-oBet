@@ -52,6 +52,7 @@ namespace App_Bets.Domain.Modelos
             DisplayName = displayName;
             Email = email;
             BancaInicial = bancaInicial;
+            BancaAtual = bancaInicial; 
             MetaBanca = metaBanca;
         }
 
