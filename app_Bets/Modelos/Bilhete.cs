@@ -13,7 +13,7 @@ namespace App_Bets.Domain.Modelos
         {
             Odd = odd;
             ValorApostado = valorApostado;
-            TipoBanca = tipoBanca;
+            TipoBanca = odd <= 2 ? TipoBanca.Segura : tipoBanca;
             Status = status;
             CasaAposta = CasaAposta.Betano; 
             ValorRetornado = CalcularValorRetorno();
