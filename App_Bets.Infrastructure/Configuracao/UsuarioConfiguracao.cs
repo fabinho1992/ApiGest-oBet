@@ -24,6 +24,10 @@ namespace App_Bets.Infrastructure.Configuracao
             builder.Property(u => u.Email)
                 .HasMaxLength(256);
 
+            builder.Property(b => b.BancaPreferida)
+                .HasConversion<string>()
+                .IsRequired();
+
             builder.Property(u => u.DisplayName)
                 .IsRequired()
                 .HasMaxLength(150);

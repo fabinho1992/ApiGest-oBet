@@ -21,6 +21,7 @@ namespace App_Bets.Application.Profiles
                     cmd.DisplayName,
                     cmd.Cpf,
                     cmd.Email,
+                    cmd.CasaPreferida,
                     cmd.BancaInicial,
                     cmd.MetaBanca
                 ));

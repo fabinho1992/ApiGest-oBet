@@ -222,6 +222,7 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
                 nome: "Fabio",
                 cpf: "12345678900",
                 email: "fabio@email.com",
+                casaPreferida: CasaAposta.Betano,
                 bancaInicial: 1000,
                 metaBanca: 2000
             );

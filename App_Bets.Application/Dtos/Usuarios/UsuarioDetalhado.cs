@@ -1,4 +1,5 @@
 ﻿using App_Bets.Application.Dtos.bilhetes;
+using App_Bets.Domain.Enuns;
 using App_Bets.Domain.Modelos;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace App_Bets.Application.Dtos.Usuarios
         public string DisplayName { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public CasaAposta CasaPreferida { get; set; }
         public string BancaInicial { get; set; }
         public double BancaAtual { get; set; }
         public double MetaBanca { get; set; }

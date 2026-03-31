@@ -1,4 +1,5 @@
 ﻿
+using App_Bets.Domain.Enuns;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
@@ -11,11 +12,12 @@ namespace App_Bets.Domain.Modelos
 {
     public class Usuario
     {
-        public Usuario(string nome, string cpf, string email, double bancaInicial, double metaBanca)
+        public Usuario(string nome, string cpf, string email, CasaAposta casaPreferida , double bancaInicial, double metaBanca)
         {
             DisplayName = nome;
             Cpf = cpf;
             Email = email;
+            BancaPreferida = casaPreferida;
             BancaInicial = bancaInicial;
             MetaBanca = metaBanca;
             DataCriacao = DateTime.UtcNow;
@@ -26,7 +28,7 @@ namespace App_Bets.Domain.Modelos
         public string DisplayName { get; private set; }
         public string Cpf { get; private set; }
         public string Email { get; private set; }
-
+        public CasaAposta BancaPreferida { get; set; }
         public double BancaInicial { get; private set; }
         public double BancaAtual { get; private set; }
         public double MetaBanca { get; private set; }
