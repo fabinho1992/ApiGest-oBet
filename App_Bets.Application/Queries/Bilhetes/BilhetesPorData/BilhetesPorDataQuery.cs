@@ -1,5 +1,6 @@
 ﻿using App_Bets.Application.Dtos;
 using App_Bets.Application.Dtos.Bilhetes;
+using App_Bets.Domain.Enuns;
 using App_Bets.Domain.Modelos;
 using MediatR;
 using System;
@@ -13,12 +14,14 @@ namespace App_Bets.Application.Queries.Bilhetes.BilhetesPorData
     public class BilhetesPorDataQuery : ParametrosPaginacao, IRequest<ResultViewModel<List<BilhetesListaPorUsuario>>>
     {
         public DateTime Data { get; set; }
+        public MercadoEnum? Mercado { get; set; }
 
-        public BilhetesPorDataQuery(DateTime data, ParametrosPaginacao parametros)
+        public BilhetesPorDataQuery(DateTime data, ParametrosPaginacao parametros, MercadoEnum? mercado)
         {
             Data = data;
             PageNumber = parametros.PageNumber;
-            PageSize = parametros.PageSize; 
+            PageSize = parametros.PageSize;
+            Mercado = mercado;
         }
     }
 }

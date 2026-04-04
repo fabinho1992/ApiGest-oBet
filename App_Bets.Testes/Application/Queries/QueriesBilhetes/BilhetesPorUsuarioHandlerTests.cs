@@ -42,13 +42,13 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
         public async Task Handle_DeveRetornarErro_QuandoNaoExistiremBilhetes()
         {
             // Arrange
-            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10);
+            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10, MercadoEnum.Cartoes);
             var email = "fabio@email.com";
 
             _usuarioContextMock.Setup(x => x.Email).Returns(email);
 
             _bilheteRepositorioMock
-                .Setup(x => x.GetBilhetesPorUsuario(email, query))
+                .Setup(x => x.GetBilhetesPorUsuario(email, MercadoEnum.Cartoes, query.PageNumber, query.PageSize))
                 .ReturnsAsync((new List<Bilhete>(), 0));
 
             // Act
@@ -63,7 +63,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
                 Times.Never);
 
             _bilheteRepositorioMock.Verify(
-                x => x.GetBilhetesPorUsuario(email, query),
+                x => x.GetBilhetesPorUsuario(email, MercadoEnum.Cartoes, query.PageNumber, query.PageSize),
                 Times.Once);
         }
 
@@ -71,7 +71,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
         public async Task Handle_DeveRetornarSucesso_QuandoExistiremBilhetes()
         {
             // Arrange
-            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10);
+            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10, MercadoEnum.Cartoes);
             var email = "fabio@email.com";
 
             var bilhetes = new List<Bilhete>
@@ -91,7 +91,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
             _usuarioContextMock.Setup(x => x.Email).Returns(email);
 
             _bilheteRepositorioMock
-                .Setup(x => x.GetBilhetesPorUsuario(email, query))
+                .Setup(x => x.GetBilhetesPorUsuario(email, MercadoEnum.Cartoes, query.PageNumber, query.PageSize))
                 .ReturnsAsync((bilhetes, totalCount));
 
             _mapperMock
@@ -113,7 +113,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
             Assert.Equal(bilhetesDto[1].Status, result.Data[1].Status);
 
             _bilheteRepositorioMock.Verify(
-                x => x.GetBilhetesPorUsuario(email, query),
+                x => x.GetBilhetesPorUsuario(email, MercadoEnum.Cartoes, query.PageNumber, query.PageSize),
                 Times.Once);
 
             _mapperMock.Verify(
@@ -125,7 +125,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
         public async Task Handle_DeveChamarRepositorioComEmailDoUsuarioLogado()
         {
             // Arrange
-            var query = new BilhetesPorUsuarioQuery(pageNumber: 2, pageSize: 5);
+            var query = new BilhetesPorUsuarioQuery(pageNumber: 2, pageSize: 5, MercadoEnum.Gols);
             var email = "usuario@teste.com";
 
             var bilhetes = new List<Bilhete>
@@ -133,7 +133,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
                 CriarBilhete(StatusEnum.Pendente, 1.5, 20)
             };
 
-            var bilhetesDto = new List<BilhetesListaPorUsuario>
+                    var bilhetesDto = new List<BilhetesListaPorUsuario>
             {
                 CriarBilheteDto(StatusEnum.Pendente, 1.5, 20)
             };
@@ -141,7 +141,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
             _usuarioContextMock.Setup(x => x.Email).Returns(email);
 
             _bilheteRepositorioMock
-                .Setup(x => x.GetBilhetesPorUsuario(email, query))
+                .Setup(x => x.GetBilhetesPorUsuario(email, MercadoEnum.Gols, query.PageNumber, query.PageSize))
                 .ReturnsAsync((bilhetes, 1));
 
             _mapperMock
@@ -155,7 +155,9 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
             _bilheteRepositorioMock.Verify(
                 x => x.GetBilhetesPorUsuario(
                     It.Is<string>(e => e == email),
-                    It.Is<BilhetesPorUsuarioQuery>(q => q.PageNumber == 2 && q.PageSize == 5)),
+                    It.Is<MercadoEnum?>(m => m == MercadoEnum.Gols),
+                    It.Is<int>(p => p == 2),
+                    It.Is<int>(s => s == 5)),
                 Times.Once);
         }
 
@@ -163,7 +165,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
         public async Task Handle_DeveRetornarTotalCount_QuandoExistiremBilhetes()
         {
             // Arrange
-            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10);
+            var query = new BilhetesPorUsuarioQuery(pageNumber: 1, pageSize: 10, MercadoEnum.Gols);
             var email = "fabio@email.com";
 
             var bilhetes = new List<Bilhete>
@@ -171,7 +173,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
                 CriarBilhete(StatusEnum.Ganha, 2.0, 100)
             };
 
-            var bilhetesDto = new List<BilhetesListaPorUsuario>
+                    var bilhetesDto = new List<BilhetesListaPorUsuario>
             {
                 CriarBilheteDto(StatusEnum.Ganha, 2.0, 100)
             };
@@ -181,7 +183,7 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
             _usuarioContextMock.Setup(x => x.Email).Returns(email);
 
             _bilheteRepositorioMock
-                .Setup(x => x.GetBilhetesPorUsuario(email, query))
+                .Setup(x => x.GetBilhetesPorUsuario(email, MercadoEnum.Gols, query.PageNumber, query.PageSize))
                 .ReturnsAsync((bilhetes, totalCount));
 
             _mapperMock
@@ -202,7 +204,8 @@ namespace App_Bets.Tests.Application.Queries.QueriesBilhetes
                 odd,
                 valorApostado,
                 TipoBanca.Bingo,
-                status
+                status,
+                MercadoEnum.Cartoes
             );
         }
 

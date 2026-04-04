@@ -9,15 +9,16 @@ namespace App_Bets.Domain.Modelos
 {
     public class Bilhete
     {
-        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status)
+        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status, MercadoEnum mercado)
         {
             Odd = odd;
             ValorApostado = valorApostado;
             TipoBanca = odd <= 2 ? TipoBanca.Segura : tipoBanca;
             Status = status;
-            CasaAposta = CasaAposta.Betano; 
+            CasaAposta = CasaAposta.Betano;
             ValorRetornado = CalcularValorRetorno();
             DataAposta = DateTime.UtcNow;
+            Mercado = mercado;
         }
 
         public Guid Id { get; private set; }
@@ -26,7 +27,7 @@ namespace App_Bets.Domain.Modelos
         public StatusEnum Status { get; set; }
         public TipoBanca TipoBanca { get; set; }
         public CasaAposta CasaAposta { get; private set; }
-
+        public MercadoEnum Mercado { get; private set; }
         public double ValorApostado { get; private set; }
         public double ValorRetornado { get; private set; }
         public DateTime DataAposta { get; private set; }
@@ -46,6 +47,16 @@ namespace App_Bets.Domain.Modelos
         public void AtualizarCasaAposta(CasaAposta novaCasaAposta)
         {
             CasaAposta = novaCasaAposta;
+        }
+
+        public double ObterImpactoNaBanca()
+        {
+            return Status switch
+            {
+                StatusEnum.Ganha => ValorRetornado - ValorApostado,
+                StatusEnum.Perdida => -ValorApostado,
+                _ => 0
+            };
         }
 
     }

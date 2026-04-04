@@ -2,6 +2,7 @@
 using App_Bets.Application.Dtos.Bilhetes;
 using App_Bets.Application.Queries.Bilhetes;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorUsuario;
+using App_Bets.Domain.Enuns;
 using App_Bets.Domain.IRepositorio;
 using App_Bets.Domain.Services;
 using AutoMapper;
@@ -22,15 +23,19 @@ public class BilhetesPorUsuarioHandler
     }
 
     public async Task<ResultViewModel<List<BilhetesListaPorUsuario>>> Handle(
-        BilhetesPorUsuarioQuery request,
-        CancellationToken cancellationToken)
+    BilhetesPorUsuarioQuery request,
+    CancellationToken cancellationToken)
     {
-
         var email = _usuarioContext.Email;
-        
-        var (bilhetes, totalCount) =
-            await _unitOfWork.BilheteRepositorio
-                .GetBilhetesPorUsuario(email, request);
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return ResultViewModel<List<BilhetesListaPorUsuario>>
+                .Error("Usuário não autenticado.");
+        }
+
+        var (bilhetes, totalCount) = await _unitOfWork.BilheteRepositorio
+            .GetBilhetesPorUsuario(email, request.Mercado, request.PageNumber, request.PageSize);
 
         if (bilhetes == null || !bilhetes.Any())
         {
@@ -38,10 +43,8 @@ public class BilhetesPorUsuarioHandler
                 .Error("Nenhum bilhete encontrado para este usuário.");
         }
 
-        var bilhetesDto =
-            _mapper.Map<List<BilhetesListaPorUsuario>>(bilhetes);
+        var bilhetesDto = _mapper.Map<List<BilhetesListaPorUsuario>>(bilhetes);
 
-        
         return ResultViewModel<List<BilhetesListaPorUsuario>>
             .Success(bilhetesDto, totalCount);
     }

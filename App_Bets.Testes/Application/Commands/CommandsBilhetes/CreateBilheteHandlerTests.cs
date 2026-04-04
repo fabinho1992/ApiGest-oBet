@@ -212,7 +212,8 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
                 valorApostado,
                 TipoBanca.Bingo,
                 status,
-                CasaAposta.Betano
+                CasaAposta.Betano,
+                MercadoEnum.Gols
             );
         }
 

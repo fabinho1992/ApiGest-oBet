@@ -19,9 +19,7 @@ namespace App_Bets.Application.Profiles
                 dest => dest.Usuarioname,
                 opt => opt.MapFrom(src => src.Usuario.DisplayName)
             )
-            .ForMember(
-                dest => dest.DataAposta,
-                opt => opt.MapFrom(src => src.DataAposta.ToString("dd/MM/yyyy"))
+            .ForMember(dest => dest.DataAposta, opt => opt.MapFrom(src => src.DataAposta)
             )
             .ReverseMap();
 

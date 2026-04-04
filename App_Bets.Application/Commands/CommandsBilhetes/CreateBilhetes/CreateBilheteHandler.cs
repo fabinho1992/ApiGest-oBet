@@ -38,7 +38,7 @@ namespace App_Bets.Application.Commands.CommandsBilhetes.CreateBilhetes
             if (string.IsNullOrEmpty(userId) || usuario is null)
                 return ResultViewModel<Guid>.Error("Usuário não autenticado");
 
-            var bilhete = new Bilhete(request.Odd, request.ValorApostado, request.TipoBanca, request.StatusEnum)
+            var bilhete = new Bilhete(request.Odd, request.ValorApostado, request.TipoBanca, request.StatusEnum, request.Mercado)
             {
                 UsuarioId = Guid.Parse(userId)
             };

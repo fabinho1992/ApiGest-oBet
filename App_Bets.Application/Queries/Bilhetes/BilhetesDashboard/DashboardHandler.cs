@@ -22,7 +22,7 @@ namespace App_Bets.Application.Queries.Bilhetes.BilhetesDashboard
         {
             var email = _usuarioContext.Email;
 
-            var dashboard = await _unitOfWork.BilheteRepositorio.GetDashboard(email);
+            var dashboard = await _unitOfWork.BilheteRepositorio.GetDashboardMercado(email, request.Mercado);
             if (dashboard is null)
             {
                 return ResultViewModel<DashboardDto>.Error("Não foi possível obter os dados do dashboard.");

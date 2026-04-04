@@ -4,8 +4,10 @@ using App_Bets.Application.Commands.CommandsBilhetes.ResetarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.UpdateStatus;
 using App_Bets.Application.Queries.Bilhetes.BilhetesCasaAposta;
 using App_Bets.Application.Queries.Bilhetes.BilhetesDashboard;
+using App_Bets.Application.Queries.Bilhetes.BilhetesFiltrados;
 using App_Bets.Application.Queries.Bilhetes.BilhetesListaConsulta;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorData;
+using App_Bets.Application.Queries.Bilhetes.BilhetesPorMercado;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorStatus;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorUsuario;
 using App_Bets.Application.Queries.Bilhetes.ResumoCasaAposta;
@@ -33,7 +35,7 @@ namespace App_Bets.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]  
+        [HttpPost]
         public async Task<IActionResult> CreateBilhete([FromBody] CreateBilheteCommand command)
         {
             if (!ModelState.IsValid)
@@ -64,10 +66,10 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpGet("usuario/bilhetes")]
-        public async Task<IActionResult> GetBilhetesUsuario([FromQuery] ParametrosPaginacao parametrosPaginacao)
+        public async Task<IActionResult> GetBilhetesUsuario(MercadoEnum? mercado, [FromQuery] ParametrosPaginacao parametrosPaginacao)
         {
 
-            var query = new BilhetesPorUsuarioQuery(parametrosPaginacao.PageNumber, parametrosPaginacao.PageSize);
+            var query = new BilhetesPorUsuarioQuery(parametrosPaginacao.PageNumber, parametrosPaginacao.PageSize, mercado);
 
             var result = await _mediator.Send(query);
 
@@ -79,10 +81,10 @@ namespace App_Bets.Api.Controllers
 
 
         [HttpGet("usuario/bilhetesPorData")]
-        public async Task<IActionResult> GetBilhetesUsuarioPorData(DateTime data, [FromQuery] ParametrosPaginacao parametrosPaginacao)
+        public async Task<IActionResult> GetBilhetesUsuarioPorData(DateTime data, MercadoEnum? mercado, [FromQuery] ParametrosPaginacao parametrosPaginacao)
         {
 
-            var query = new BilhetesPorDataQuery(data, parametrosPaginacao);
+            var query = new BilhetesPorDataQuery(data, parametrosPaginacao, mercado);
 
             var result = await _mediator.Send(query);
 
@@ -93,10 +95,10 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpGet("casaAposta")]
-        public async Task<IActionResult> GetBilhetesUsuarioPorCasaDeAposta(CasaAposta casaAposta, [FromQuery] ParametrosPaginacao parametrosPaginacao)
+        public async Task<IActionResult> GetBilhetesUsuarioPorCasaDeAposta(CasaAposta casaAposta, MercadoEnum? mercado, [FromQuery] ParametrosPaginacao parametrosPaginacao)
         {
 
-            var query = new BilhetesCasaApostaQuery(casaAposta, parametrosPaginacao);
+            var query = new BilhetesCasaApostaQuery(casaAposta, parametrosPaginacao, mercado);
 
             var result = await _mediator.Send(query);
 
@@ -107,10 +109,10 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpGet("dashboard")]
-        public async Task<IActionResult> GetBilhetesDashboard()
+        public async Task<IActionResult> GetBilhetesDashboard(MercadoEnum? mercado)
         {
 
-            var query = new DashboardQuery();
+            var query = new DashboardQuery(mercado);
 
             var result = await _mediator.Send(query);
 
@@ -121,10 +123,10 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpGet("resumoCasaApostas")]
-        public async Task<IActionResult> GetBilhetesResumo()
+        public async Task<IActionResult> GetBilhetesResumo(MercadoEnum? mercado)
         {
 
-            var query = new ResumoCasaApostaQuery();
+            var query = new ResumoCasaApostaQuery(mercado);
 
             var result = await _mediator.Send(query);
 
@@ -135,10 +137,10 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpGet("status")]
-        public async Task<IActionResult> GetBilhetesStatus(StatusEnum status, [FromQuery] ParametrosPaginacao parametrosPaginacao)
+        public async Task<IActionResult> GetBilhetesStatus(StatusEnum status, MercadoEnum? mercado, [FromQuery] ParametrosPaginacao parametrosPaginacao)
         {
 
-            var query = new BilhetePorStatusQuery(status, parametrosPaginacao.PageNumber, parametrosPaginacao.PageSize);
+            var query = new BilhetePorStatusQuery(status, parametrosPaginacao.PageNumber, parametrosPaginacao.PageSize, mercado);
 
             var result = await _mediator.Send(query);
 
@@ -148,7 +150,7 @@ namespace App_Bets.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("status")]
+        [HttpPut()]
         public async Task<IActionResult> Update(UpdateStatusCommand updateStatus)
         {
             if (!ModelState.IsValid)
@@ -186,6 +188,21 @@ namespace App_Bets.Api.Controllers
         }
 
 
+        [HttpGet("mercado")]
+        public async Task<IActionResult> GetBilhetesMercados(MercadoEnum mercadoEnum, [FromQuery] ParametrosPaginacao parametrosPaginacao)
+        {
+
+            var query = new BilheteMercadoQuery(parametrosPaginacao.PageNumber, parametrosPaginacao.PageSize, mercadoEnum);
+
+            var result = await _mediator.Send(query);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result);
+        }
+
+
         [HttpDelete("reset")]
         public async Task<IActionResult> DeleteAll()
         {
@@ -198,6 +215,30 @@ namespace App_Bets.Api.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet("usuario/bilhetes-filtrados")]
+        public async Task<IActionResult> GetBilhetesFiltrados(
+        [FromQuery] CasaAposta? casaAposta,
+        [FromQuery] MercadoEnum? mercado,
+        [FromQuery] StatusEnum? status,
+        [FromQuery] DateTime? data,
+        [FromQuery] ParametrosPaginacao parametrosPaginacao)
+        {
+            var query = new BilhetesFiltradosQuery(
+                parametrosPaginacao.PageNumber,
+                parametrosPaginacao.PageSize,
+                casaAposta,
+                mercado,
+                status,
+                data);
+
+            var result = await _mediator.Send(query);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result);
         }
     }
 }

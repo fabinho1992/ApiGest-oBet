@@ -31,7 +31,7 @@ namespace App_Bets.Application.Queries.Bilhetes.BilhetesPorStatus
 
             var (bilhetes, totalCount) =
                 await _unitOfWork.BilheteRepositorio
-                    .GetBilhetesPorStatus(email, request.StatusEnum, request.PageNumber, request.PageSize);
+                    .GetBilhetesPorStatus(email, request.StatusEnum, request.Mercado, request.PageNumber, request.PageSize);
 
             if (bilhetes == null || !bilhetes.Any())
             {

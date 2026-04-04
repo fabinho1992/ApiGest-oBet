@@ -9,18 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App_Bets.Application.Queries.Bilhetes.BilhetesPorUsuario
+namespace App_Bets.Application.Queries.Bilhetes.BilhetesPorMercado
 {
-    public class BilhetesPorUsuarioQuery : ParametrosPaginacao, IRequest<ResultViewModel<List<BilhetesListaPorUsuario>>>
+    public class BilheteMercadoQuery : ParametrosPaginacao, IRequest<ResultViewModel<List<BilhetesListaPorUsuario>>>
     {
-        public BilhetesPorUsuarioQuery(int pageNumber, int pageSize, MercadoEnum? mercado)
+        public BilheteMercadoQuery(int pageNumber, int pageSize, MercadoEnum mercado)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
             Mercado = mercado;
         }
 
-        public MercadoEnum? Mercado { get; set; }
-
+        public MercadoEnum Mercado { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace App_Bets.Api.Controllers
 
         [HttpGet("email")]
         [Authorize]
-        public async Task<IActionResult> GetByEmail([FromQuery] string email)
+        public async Task<IActionResult> GetByEmail()
         {
             var query = new UsuarioEmailQuery();
 

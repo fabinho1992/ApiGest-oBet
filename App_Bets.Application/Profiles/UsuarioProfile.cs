@@ -26,7 +26,7 @@ namespace App_Bets.Application.Profiles
                     cmd.MetaBanca
                 ));
 
-            CreateMap<Usuario, UsuarioDetalhado>();
+            CreateMap<Usuario, UsuarioDetalhado>().ReverseMap();
             CreateMap<Usuario, UpdateUserCommand>().ReverseMap();
         }
     }

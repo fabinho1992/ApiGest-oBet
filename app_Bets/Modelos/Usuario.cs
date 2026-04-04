@@ -17,7 +17,7 @@ namespace App_Bets.Domain.Modelos
             DisplayName = nome;
             Cpf = cpf;
             Email = email;
-            BancaPreferida = casaPreferida;
+            CasaPreferida = casaPreferida;
             BancaInicial = bancaInicial;
             MetaBanca = metaBanca;
             DataCriacao = DateTime.UtcNow;
@@ -28,7 +28,7 @@ namespace App_Bets.Domain.Modelos
         public string DisplayName { get; private set; }
         public string Cpf { get; private set; }
         public string Email { get; private set; }
-        public CasaAposta BancaPreferida { get; set; }
+        public CasaAposta CasaPreferida { get; set; }
         public double BancaInicial { get; private set; }
         public double BancaAtual { get; private set; }
         public double MetaBanca { get; private set; }
@@ -63,5 +63,9 @@ namespace App_Bets.Domain.Modelos
             BancaAtual = BancaInicial;
         }
 
+        public void AjustarBanca(double valor)
+        {
+            BancaAtual += valor;
+        }
     }
 }

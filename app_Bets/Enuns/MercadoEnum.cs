@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace App_Bets.Domain.Enuns
 {
-    public enum CasaAposta
+    public enum MercadoEnum
     {
-        Betano = 1,
-        Bet365 = 2,
-        SuperBet = 3,
-        SportingBet = 4,
-        EsportivaBet = 5,
-
+        Escanteios = 0,
+        Gols = 1,
+        Cartoes = 2,
+        AmbasMarcam = 3,
+        ResultadoFinal = 4
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace App_Bets.Infrastructure.Repository
 {
@@ -20,13 +21,19 @@ namespace App_Bets.Infrastructure.Repository
             _context = context;
         }
 
-        public async Task<(List<Bilhete> bilhetes, int totalPaginas, int totalCount)> GetBilhetesPorCasaAposta(string email, CasaAposta casaAposta, int pageNumer, int pageSize)
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas, int totalCount)> GetBilhetesPorCasaAposta(string email, CasaAposta casaAposta, MercadoEnum? mercado, int pageNumer, int pageSize)
         {
             var query = _context.Bilhetes
                 .Include(b => b.Usuario)
                 .Where(b =>
                     b.Usuario.Email == email &&
                     b.CasaAposta == casaAposta);
+
+
+            if (mercado.HasValue)
+            {
+                query = query.Where(b => b.Mercado == mercado.Value);
+            }
 
             var totalCount = query.Count();
 
@@ -45,9 +52,9 @@ namespace App_Bets.Infrastructure.Repository
 
         }
 
-        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorData(string email, DateTime data, int pageNumer, int pageSize)
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorData(string email, DateTime data, MercadoEnum? mercado, int pageNumer, int pageSize)
         {
-            var dataInicio = data.Date;
+            var dataInicio = DateTime.SpecifyKind(data.Date, DateTimeKind.Utc);
             var dataFim = dataInicio.AddDays(1);
 
             var query = _context.Bilhetes
@@ -56,6 +63,12 @@ namespace App_Bets.Infrastructure.Repository
                     b.Usuario.Email == email &&
                     b.DataAposta >= dataInicio &&
                     b.DataAposta < dataFim);
+
+
+            if (mercado.HasValue)
+            {
+                query = query.Where(b => b.Mercado == mercado.Value);
+            }
 
             var totalCount = await query.CountAsync();
 
@@ -72,23 +85,34 @@ namespace App_Bets.Infrastructure.Repository
             return (items, totalPaginas);
         }
 
-        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorUsuario(string email, ParametrosPaginacao parametrosPaginacao)
-        {
-            var query = _context.Bilhetes.Include(b => b.Usuario)
-                .Where(b => b.Usuario.Email == email);
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorUsuario(
+             string email,
+             MercadoEnum? mercadoEnum,
+             int pageNumber, int pageSize)
+                {
+                    var bilhetesQuery = _context.Bilhetes
+                        .Include(b => b.Usuario)
+                        .Where(b => b.Usuario.Email == email);
 
-            var totalCount = await query.CountAsync();
+                    if (mercadoEnum.HasValue)
+                    {
+                        bilhetesQuery = bilhetesQuery
+                            .Where(b => b.Mercado == mercadoEnum.Value);
+                    }
 
-            var items = await query
-                .Skip((parametrosPaginacao.PageNumber - 1) * parametrosPaginacao.PageSize)
-                .Take(parametrosPaginacao.PageSize)
-                .ToListAsync();
+                    var totalCount = await bilhetesQuery.CountAsync();
 
-            var totalPaginas = (int)Math.Ceiling(
-                (double)totalCount / parametrosPaginacao.PageSize
+                    var bilhetes = await bilhetesQuery
+                        .OrderByDescending(b => b.DataAposta)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+
+                                var totalPaginas = (int)Math.Ceiling(
+                    (double)totalCount / pageSize
                     );
 
-            return (items, totalPaginas);
+            return (bilhetes, totalPaginas);
         }
 
         public async Task<Dashboard> GetDashboard(string email)
@@ -123,10 +147,15 @@ namespace App_Bets.Infrastructure.Repository
             };
         }
 
-        public async Task<List<CasaApostaResumo>> GetResumoCasas(string email)
+        public async Task<List<CasaApostaResumo>> GetResumoCasas(string email, MercadoEnum? mercado)
         {
-            return await _context.Bilhetes
-                .Where(b => b.Usuario.Email == email)
+            var query = _context.Bilhetes
+                .Where(b => b.Usuario.Email == email);
+
+            if (mercado.HasValue)
+                query = query.Where(b => b.Mercado == mercado.Value);
+
+            return await query
                 .GroupBy(b => b.CasaAposta)
                 .Select(g => new CasaApostaResumo
                 {
@@ -146,10 +175,16 @@ namespace App_Bets.Infrastructure.Repository
 
         }
 
-        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorStatus(string email, StatusEnum status, int pageNumer, int pageSize)
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorStatus(string email, StatusEnum status, MercadoEnum? mercado, int pageNumer, int pageSize)
         {
             var query = _context.Bilhetes.Include(b => b.Usuario)
                 .Where(b => b.Usuario.Email == email && b.Status == status);
+
+
+            if (mercado.HasValue)
+            {
+                query = query.Where(b => b.Mercado == mercado.Value);
+            }
 
             var totalCount = await query.CountAsync();
 
@@ -165,5 +200,117 @@ namespace App_Bets.Infrastructure.Repository
             return (items, totalPaginas);
 
         }
+
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas, int totalCount)> GetBilhetesPorMercado(string email, MercadoEnum? mercado, int pageNumer, int pageSize)
+        {
+            var query = _context.Bilhetes
+                .Include(b => b.Usuario)
+                .Where(b =>
+                    b.Usuario.Email == email &&
+                    b.Mercado == mercado);
+
+            var totalCount = query.Count();
+
+            var items = await query
+                .OrderByDescending(b => b.DataAposta)
+                .Skip((pageNumer - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var totalPaginas = (int)Math.Ceiling(
+                (double)totalCount / pageSize
+                    );
+
+            return (items, totalPaginas, totalCount);
+        }
+
+        public async Task<Dashboard> GetDashboardMercado(string email, MercadoEnum? mercado)
+        {
+
+            var bilhetes = _context.Bilhetes
+                .Where(b => b.Usuario.Email == email);
+
+            if (mercado.HasValue)
+            {
+                bilhetes = bilhetes.Where(b => b.Mercado == mercado.Value);
+            }
+
+            var totalGanhas = await bilhetes
+                .CountAsync(b => b.Status == StatusEnum.Ganha);
+
+            var totalPerdidas = await bilhetes
+                .CountAsync(b => b.Status == StatusEnum.Perdida);
+
+            var lucroTotal = await bilhetes
+                .Where(b => b.Status == StatusEnum.Ganha)
+                .SumAsync(b => b.ValorRetornado - b.ValorApostado);
+
+            var totalInvestido = await bilhetes
+                .SumAsync(b => b.ValorApostado);
+
+            var prejuizoTotal = await bilhetes
+                .Where(b => b.Status == StatusEnum.Perdida)
+                .SumAsync(b => b.ValorApostado);
+
+            return new Dashboard
+            {
+                TotalGanhas = totalGanhas,
+                TotalPerdidas = totalPerdidas,
+                Lucro = lucroTotal,
+                TotalInvestido = totalInvestido,
+                Prejuizo = prejuizoTotal
+            };
+        }
+
+        public async Task<(List<Bilhete> Bilhetes, int TotalPaginas)> ObterBilhetesFiltradosPorUsuarioAsync(
+            string email,
+            int pageNumber,
+            int pageSize,
+            CasaAposta? casaAposta,
+            MercadoEnum? mercado,
+            StatusEnum? status,
+            DateTime? data)
+        {
+            var query = _context.Bilhetes
+                .AsNoTracking()
+                .Include(b => b.Usuario)
+                .Where(b => b.Usuario.Email == email);
+
+            if (casaAposta.HasValue)
+            {
+                query = query.Where(b => b.CasaAposta == casaAposta.Value);
+            }
+
+            if (mercado.HasValue)
+            {
+                query = query.Where(b => b.Mercado == mercado.Value);
+            }
+
+            if (status.HasValue)
+            {
+                query = query.Where(b => b.Status == status.Value);
+            }
+
+            if (data.HasValue)
+            {
+                var dataInicio = data.Value.Date;
+                var dataFim = dataInicio.AddDays(1);
+
+                query = query.Where(b => b.DataAposta >= dataInicio && b.DataAposta < dataFim);
+            }
+
+            var totalRegistros = await query.CountAsync();
+
+            var totalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize);
+
+            var bilhetes = await query
+                .OrderByDescending(b => b.DataAposta)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (bilhetes, totalPaginas);
+        }
     }
 }
+

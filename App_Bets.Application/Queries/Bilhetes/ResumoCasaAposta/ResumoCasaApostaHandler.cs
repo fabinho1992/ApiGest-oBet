@@ -28,7 +28,7 @@ namespace App_Bets.Application.Queries.Bilhetes.ResumoCasaAposta
         public async Task<ResultViewModel<List<CasaApostaResumoDto>>> Handle(ResumoCasaApostaQuery request, CancellationToken cancellationToken)
         {
             var email = _usuarioContex.Email;
-            var resumo = await _unitOfWork.BilheteRepositorio.GetResumoCasas(email);
+            var resumo = await _unitOfWork.BilheteRepositorio.GetResumoCasas(email, request.Mercado);
 
             var resumoDto = _mapper.Map<List<CasaApostaResumoDto>>(resumo);
             Console.WriteLine(resumoDto);

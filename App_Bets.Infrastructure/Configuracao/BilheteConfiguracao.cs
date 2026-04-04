@@ -45,6 +45,15 @@ namespace App_Bets.Infrastructure.Configuracao
                 .HasConversion<string>()
                 .IsRequired();
 
+
+            builder.Property(b => b.Mercado)
+                .HasConversion<string>()
+                .IsRequired();
+
+            builder.Property(b => b.CasaAposta)
+                .HasConversion<string>()
+                .IsRequired();
+
             // Tipo de banca enum
             builder.Property(b => b.TipoBanca)
                 .HasConversion<string>()

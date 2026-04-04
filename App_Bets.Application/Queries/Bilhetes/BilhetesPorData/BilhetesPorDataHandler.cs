@@ -32,7 +32,7 @@ namespace App_Bets.Application.Queries.Bilhetes.BilhetesPorData
 
             var (bilhetes, totalCount) =
                 await _unitOfWork.BilheteRepositorio
-                .GetBilhetesPorData(email, request.Data, request.PageNumber, request.PageSize);
+                .GetBilhetesPorData(email, request.Data, request.Mercado, request.PageNumber, request.PageSize);
 
             if (bilhetes == null || !bilhetes.Any())
             {
