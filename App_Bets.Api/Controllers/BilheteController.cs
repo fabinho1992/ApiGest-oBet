@@ -10,6 +10,7 @@ using App_Bets.Application.Queries.Bilhetes.BilhetesPorData;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorMercado;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorStatus;
 using App_Bets.Application.Queries.Bilhetes.BilhetesPorUsuario;
+using App_Bets.Application.Queries.Bilhetes.ExportarBilhetesPdf;
 using App_Bets.Application.Queries.Bilhetes.ResumoCasaAposta;
 using App_Bets.Application.Queries.Usuario.UsuarioPeloCpf;
 using App_Bets.Domain.Enuns;
@@ -239,6 +240,35 @@ namespace App_Bets.Api.Controllers
                 return BadRequest(result.Message);
 
             return Ok(result);
+        }
+
+        [HttpGet("usuario/bilhetes-relatorio-pdf")]
+        public async Task<IActionResult> ExportarBilhetesPdf(
+        [FromQuery] CasaAposta? casaAposta,
+        [FromQuery] MercadoEnum? mercado,
+        [FromQuery] StatusEnum? status,
+        [FromQuery] DateTime? data,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] bool somentePaginaAtual = true)
+        {
+            var query = new ExportarBilhetesPdfQuery(
+                casaAposta,
+                mercado,
+                status,
+                data,
+                pageNumber,
+                pageSize,
+                somentePaginaAtual);
+
+            var result = await _mediator.Send(query);
+
+            if (!result.IsSuccess || result.Data is null)
+                return BadRequest(result.Message);
+
+            var nomeArquivo = $"relatorio-bilhetes-{DateTime.Now:yyyyMMdd-HHmmss}.pdf";
+
+            return File(result.Data, "application/pdf", nomeArquivo);
         }
     }
 }

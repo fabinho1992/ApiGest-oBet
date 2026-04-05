@@ -311,6 +311,41 @@ namespace App_Bets.Infrastructure.Repository
 
             return (bilhetes, totalPaginas);
         }
+
+        public async Task<List<Bilhete>> ObterBilhetesFiltradosParaRelatorioAsync(string email, CasaAposta? casaAposta, MercadoEnum? mercado, StatusEnum? status, DateTime? data, int pageNumber, int pageSize, bool somentePaginaAtual)
+        {
+            var query = _context.Bilhetes
+                .AsNoTracking()
+                .Include(b => b.Usuario)
+                .Where(b => b.Usuario.Email == email);
+
+            if (casaAposta.HasValue)
+                query = query.Where(b => b.CasaAposta == casaAposta.Value);
+
+            if (mercado.HasValue)
+                query = query.Where(b => b.Mercado == mercado.Value);
+
+            if (status.HasValue)
+                query = query.Where(b => b.Status == status.Value);
+
+            if (data.HasValue)
+            {
+                var inicio = data.Value.Date;
+                var fim = inicio.AddDays(1);
+                query = query.Where(b => b.DataAposta >= inicio && b.DataAposta < fim);
+            }
+
+            query = query.OrderByDescending(b => b.DataAposta);
+
+            if (somentePaginaAtual)
+            {
+                query = query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }
 

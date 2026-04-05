@@ -30,6 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
+using QuestPDF.Infrastructure;
 using System;
 using System.Text;
 using System.Text.Json;
@@ -131,6 +132,11 @@ namespace App_Bets.Extensions
                     .AllowCredentials();
                 });
             });
+
+            //QUESTPDF
+
+            QuestPDF.Settings.License = LicenseType.Community;
+
 
             return services;
         }

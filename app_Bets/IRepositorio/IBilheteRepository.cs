@@ -20,14 +20,8 @@ namespace App_Bets.Domain.IRepositorio
         Task<Dashboard> GetDashboard(string email);
         Task<(List<Bilhete> bilhetes, int totalPaginas, int totalCount)> GetBilhetesPorMercado(string email, MercadoEnum? casaAposta, int pageNumer, int pageSize);
         Task<Dashboard> GetDashboardMercado(string email, MercadoEnum? mercado);
-        Task<(List<Bilhete> Bilhetes, int TotalPaginas)> ObterBilhetesFiltradosPorUsuarioAsync(
-            string email,
-            int pageNumber,
-            int pageSize,
-            CasaAposta? casaAposta,
-            MercadoEnum? mercado,
-            StatusEnum? status,
-            DateTime? data);
+        Task<(List<Bilhete> Bilhetes, int TotalPaginas)> ObterBilhetesFiltradosPorUsuarioAsync(string email, int pageNumber, int pageSize, CasaAposta? casaAposta, MercadoEnum? mercado, StatusEnum? status, DateTime? data);
 
+        Task<List<Bilhete>> ObterBilhetesFiltradosParaRelatorioAsync(string email, CasaAposta? casaAposta, MercadoEnum? mercado, StatusEnum? status, DateTime? data, int pageNumber, int pageSize, bool somentePaginaAtual);
     }
 }

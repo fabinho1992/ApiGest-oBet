@@ -56,7 +56,7 @@ namespace App_Bets.Application.Services.EmailServices
         public async Task SendEmailConfirmation(Usuario user)
         {
             var message = $@"
-                <h2>Bem-vindo ao App Bets 🎉</h2>
+                <h2>Bem-vindo ao BetVisions 🎉</h2>
 
                 <p>Olá <strong>{user.DisplayName}</strong>,</p>
 
