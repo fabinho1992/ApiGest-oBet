@@ -12,6 +12,7 @@ namespace App_Bets.Domain.Enuns
         Gols = 1,
         Cartoes = 2,
         AmbasMarcam = 3,
-        ResultadoFinal = 4
+        ResultadoFinal = 4,
+        Basquete = 5
     }
 }
