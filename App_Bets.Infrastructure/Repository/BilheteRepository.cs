@@ -293,10 +293,10 @@ namespace App_Bets.Infrastructure.Repository
 
             if (data.HasValue)
             {
-                var dataInicio = data.Value.Date;
-                var dataFim = dataInicio.AddDays(1);
+                var inicio = DateTime.SpecifyKind(data.Value.Date, DateTimeKind.Utc);
+                var fim = inicio.AddDays(1);
 
-                query = query.Where(b => b.DataAposta >= dataInicio && b.DataAposta < dataFim);
+                query = query.Where(b => b.DataAposta >= inicio && b.DataAposta < fim);
             }
 
             var totalRegistros = await query.CountAsync();

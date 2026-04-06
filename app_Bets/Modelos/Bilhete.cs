@@ -9,7 +9,7 @@ namespace App_Bets.Domain.Modelos
 {
     public class Bilhete
     {
-        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status, MercadoEnum mercado)
+        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status, MercadoEnum mercado, DateTime? dataAposta = null)
         {
             Odd = odd;
             ValorApostado = valorApostado;
@@ -17,8 +17,8 @@ namespace App_Bets.Domain.Modelos
             Status = status;
             CasaAposta = CasaAposta.Betano;
             ValorRetornado = CalcularValorRetorno();
-            DataAposta = DateTime.UtcNow;
             Mercado = mercado;
+            DataAposta = dataAposta ?? DateTime.UtcNow;
         }
 
         public Guid Id { get; private set; }
@@ -30,7 +30,7 @@ namespace App_Bets.Domain.Modelos
         public MercadoEnum Mercado { get; private set; }
         public double ValorApostado { get; private set; }
         public double ValorRetornado { get; private set; }
-        public DateTime DataAposta { get; private set; }
+        public DateTime? DataAposta { get; private set; }
         public Usuario? Usuario { get; set; }
 
 
@@ -47,6 +47,14 @@ namespace App_Bets.Domain.Modelos
         public void AtualizarCasaAposta(CasaAposta novaCasaAposta)
         {
             CasaAposta = novaCasaAposta;
+        }
+
+        public void AtualizarValorRetornado(double novoValorRetornado)
+        {
+            if (novoValorRetornado < 0)
+                throw new ArgumentException("O valor retornado não pode ser negativo.");
+
+            ValorRetornado = novoValorRetornado;
         }
 
         public double ObterImpactoNaBanca()

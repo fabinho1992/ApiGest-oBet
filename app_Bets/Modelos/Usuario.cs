@@ -67,5 +67,6 @@ namespace App_Bets.Domain.Modelos
         {
             BancaAtual += valor;
         }
+
     }
 }

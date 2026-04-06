@@ -26,7 +26,7 @@ namespace App_Bets.Application.Profiles
             CreateMap<Bilhete, BilheteLista>()
             .ForMember(
                 dest => dest.DataAposta,
-                opt => opt.MapFrom(src => src.DataAposta.ToString("dd/MM/yyyy"))
+                opt => opt.MapFrom(src => src.DataAposta)
             )
             .ReverseMap();
 

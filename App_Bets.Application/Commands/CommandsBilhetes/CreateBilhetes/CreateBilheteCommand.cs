@@ -11,22 +11,13 @@ namespace App_Bets.Application.Commands.CommandsBilhetes.CreateBilhetes
 {
     public class CreateBilheteCommand : IRequest<ResultViewModel<Guid>>
     {
-        public CreateBilheteCommand(double odd, double valorApostado, TipoBanca tipoBanca,
-            StatusEnum statusEnum, CasaAposta casaAposta, MercadoEnum mercado)
-        {
-            Odd = odd;
-            ValorApostado = valorApostado;
-            TipoBanca = tipoBanca;
-            StatusEnum = statusEnum;
-            CasaAposta = casaAposta;
-            Mercado = mercado;
-        }
 
-        public double Odd { get; private set; }
-        public double ValorApostado { get; private set; }
-        public TipoBanca TipoBanca{ get; private set; }
-        public StatusEnum StatusEnum { get; private set; }
-        public CasaAposta CasaAposta { get; private set; }
+        public double Odd { get; set; }
+        public double ValorApostado { get; set; }
+        public TipoBanca TipoBanca { get; set; }
+        public StatusEnum StatusEnum { get; set; }
+        public CasaAposta CasaAposta { get; set; }
         public MercadoEnum Mercado { get; set; }
+        public DateTime? DataAposta { get; set; }
     }
 }

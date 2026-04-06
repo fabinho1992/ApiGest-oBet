@@ -1,5 +1,6 @@
 ﻿using App_Bets.Application.Commands.CommandsBilhetes.CreateBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.DeleteBilhetes;
+using App_Bets.Application.Commands.CommandsBilhetes.EditarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.ResetarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.UpdateStatus;
 using App_Bets.Application.Queries.Bilhetes.BilhetesCasaAposta;
@@ -167,6 +168,17 @@ namespace App_Bets.Api.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPut("resultado")]
+        public async Task<IActionResult> EditarResultado([FromBody] EditarResultadoBilheteCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result);
         }
 
 

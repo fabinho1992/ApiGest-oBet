@@ -80,7 +80,7 @@ namespace App_Bets.Application.Documents
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text($"R$ {item.ValorApostado:0.00}");
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text($"R$ {item.ValorRetornado:0.00}");
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.Status.ToString());
-                        table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.DataAposta.ToLocalTime().ToString("dd/MM/yyyy HH:mm"));
+                        table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.DataAposta?.ToLocalTime().ToString("dd/MM/yyyy HH:mm"));
                     }
                 });
 
