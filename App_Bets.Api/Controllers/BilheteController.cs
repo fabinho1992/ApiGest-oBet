@@ -153,7 +153,7 @@ namespace App_Bets.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut()]
+        [HttpPut("status")]
         public async Task<IActionResult> Update(UpdateStatusCommand updateStatus)
         {
             if (!ModelState.IsValid)
