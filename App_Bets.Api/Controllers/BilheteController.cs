@@ -3,6 +3,7 @@ using App_Bets.Application.Commands.CommandsBilhetes.DeleteBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.EditarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.ResetarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.UpdateStatus;
+using App_Bets.Application.Dtos;
 using App_Bets.Application.Queries.Bilhetes.BilhetesCasaAposta;
 using App_Bets.Application.Queries.Bilhetes.BilhetesDashboard;
 using App_Bets.Application.Queries.Bilhetes.BilhetesFiltrados;
@@ -281,6 +282,23 @@ namespace App_Bets.Api.Controllers
             var nomeArquivo = $"relatorio-bilhetes-{DateTime.Now:yyyyMMdd-HHmmss}.pdf";
 
             return File(result.Data, "application/pdf", nomeArquivo);
+        }
+
+        [HttpPost("calcular-odd")]
+        public async Task<IActionResult> CalcularOdd([FromBody] CalcularOddRequest request)
+        {
+            if (request is null || request.Odds is null || !request.Odds.Any())
+                return BadRequest("Informe ao menos uma odd.");
+
+            if (request.Odds.Any(o => o <= 1))
+                return BadRequest("Todas as odds devem ser maiores que 1.");
+
+            var oddFinal = request.Odds.Aggregate(1.0, (acumulado, odd) => acumulado * odd);
+
+            return Ok(ResultViewModel<CalcularOddResponse>.Success(new CalcularOddResponse
+            {
+                OddFinal = Math.Round(oddFinal, 2)
+            }));
         }
     }
 }
