@@ -3,7 +3,6 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-
 namespace App_Bets.Application.Documents
 {
     public class RelatorioBilhetesPdfDocument : IDocument
@@ -40,7 +39,7 @@ namespace App_Bets.Application.Documents
                 {
                     column.Item().Text(_titulo).FontSize(18).Bold();
                     column.Item().Text($"Usuário: {_usuarioEmail}");
-                    column.Item().Text($"Emitido em: {DateTime.Now:dd/MM/yyyy HH:mm}");
+                    column.Item().Text($"Emitido em: {FormatarDataHoraBrasil(DateTime.UtcNow)}");
                     column.Item().Text($"Filtros: {_filtros}");
                     column.Item().PaddingTop(8).LineHorizontal(1);
                 });
@@ -49,14 +48,14 @@ namespace App_Bets.Application.Documents
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.RelativeColumn(2); // mercado
-                        columns.RelativeColumn(2); // casa
-                        columns.RelativeColumn(2); // tipo
-                        columns.RelativeColumn(1); // odd
+                        columns.RelativeColumn(2);    // mercado
+                        columns.RelativeColumn(2);    // casa
+                        columns.RelativeColumn(2);    // tipo
+                        columns.RelativeColumn(1);    // odd
                         columns.RelativeColumn(1.5f); // valor
                         columns.RelativeColumn(1.5f); // retorno
                         columns.RelativeColumn(1.5f); // status
-                        columns.RelativeColumn(2); // data
+                        columns.RelativeColumn(2);    // data
                     });
 
                     void HeaderCell(string text) =>
@@ -80,7 +79,7 @@ namespace App_Bets.Application.Documents
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text($"R$ {item.ValorApostado:0.00}");
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text($"R$ {item.ValorRetornado:0.00}");
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.Status.ToString());
-                        table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.DataAposta?.ToLocalTime().ToString("dd/MM/yyyy HH:mm"));
+                        table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(FormatarDataHoraBrasil(item.DataAposta));
                     }
                 });
 
@@ -94,6 +93,33 @@ namespace App_Bets.Application.Documents
                         x.TotalPages();
                     });
             });
+        }
+
+        private static string FormatarDataHoraBrasil(DateTime? dataUtc)
+        {
+            if (!dataUtc.HasValue)
+                return string.Empty;
+
+            var dataBrasil = ConverterUtcParaBrasil(dataUtc.Value);
+            return dataBrasil.ToString("dd/MM/yyyy HH:mm");
+        }
+
+        private static DateTime ConverterUtcParaBrasil(DateTime dataUtc)
+        {
+            var dataComKindUtc = dataUtc.Kind == DateTimeKind.Utc
+                ? dataUtc
+                : DateTime.SpecifyKind(dataUtc, DateTimeKind.Utc);
+
+            try
+            {
+                var tz = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+                return TimeZoneInfo.ConvertTimeFromUtc(dataComKindUtc, tz);
+            }
+            catch
+            {
+                var tz = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                return TimeZoneInfo.ConvertTimeFromUtc(dataComKindUtc, tz);
+            }
         }
     }
 }
