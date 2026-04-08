@@ -52,18 +52,36 @@ namespace App_Bets.Infrastructure.Repository
 
         }
 
-        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorData(string email, DateTime data, MercadoEnum? mercado, int pageNumer, int pageSize)
+        public async Task<(List<Bilhete> bilhetes, int totalPaginas)> GetBilhetesPorData(
+         string email,
+         DateTime data,
+         MercadoEnum? mercado,
+         int pageNumer,
+         int pageSize)
         {
-            var dataInicio = DateTime.SpecifyKind(data.Date, DateTimeKind.Utc);
-            var dataFim = dataInicio.AddDays(1);
+            TimeZoneInfo tz;
+
+            try
+            {
+                tz = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+            }
+            catch
+            {
+                tz = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            }
+
+            var dataBrasilInicio = DateTime.SpecifyKind(data.Date, DateTimeKind.Unspecified);
+            var dataBrasilFim = dataBrasilInicio.AddDays(1);
+
+            var dataInicioUtc = TimeZoneInfo.ConvertTimeToUtc(dataBrasilInicio, tz);
+            var dataFimUtc = TimeZoneInfo.ConvertTimeToUtc(dataBrasilFim, tz);
 
             var query = _context.Bilhetes
                 .Include(b => b.Usuario)
                 .Where(b =>
                     b.Usuario.Email == email &&
-                    b.DataAposta >= dataInicio &&
-                    b.DataAposta < dataFim);
-
+                    b.DataAposta >= dataInicioUtc &&
+                    b.DataAposta < dataFimUtc);
 
             if (mercado.HasValue)
             {
@@ -78,9 +96,7 @@ namespace App_Bets.Infrastructure.Repository
                 .Take(pageSize)
                 .ToListAsync();
 
-            var totalPaginas = (int)Math.Ceiling(
-                (double)totalCount / pageSize
-                    );
+            var totalPaginas = (int)Math.Ceiling((double)totalCount / pageSize);
 
             return (items, totalPaginas);
         }
@@ -312,7 +328,15 @@ namespace App_Bets.Infrastructure.Repository
             return (bilhetes, totalPaginas);
         }
 
-        public async Task<List<Bilhete>> ObterBilhetesFiltradosParaRelatorioAsync(string email, CasaAposta? casaAposta, MercadoEnum? mercado, StatusEnum? status, DateTime? data, int pageNumber, int pageSize, bool somentePaginaAtual)
+        public async Task<List<Bilhete>> ObterBilhetesFiltradosParaRelatorioAsync(
+             string email,
+             CasaAposta? casaAposta,
+             MercadoEnum? mercado,
+             StatusEnum? status,
+             DateTime? data,
+             int pageNumber,
+             int pageSize,
+             bool somentePaginaAtual)
         {
             var query = _context.Bilhetes
                 .AsNoTracking()
@@ -330,9 +354,24 @@ namespace App_Bets.Infrastructure.Repository
 
             if (data.HasValue)
             {
-                var inicio = data.Value.Date;
-                var fim = inicio.AddDays(1);
-                query = query.Where(b => b.DataAposta >= inicio && b.DataAposta < fim);
+                TimeZoneInfo tz;
+
+                try
+                {
+                    tz = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+                }
+                catch
+                {
+                    tz = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                }
+
+                var inicioBrasil = DateTime.SpecifyKind(data.Value.Date, DateTimeKind.Unspecified);
+                var fimBrasil = inicioBrasil.AddDays(1);
+
+                var inicioUtc = TimeZoneInfo.ConvertTimeToUtc(inicioBrasil, tz);
+                var fimUtc = TimeZoneInfo.ConvertTimeToUtc(fimBrasil, tz);
+
+                query = query.Where(b => b.DataAposta >= inicioUtc && b.DataAposta < fimUtc);
             }
 
             query = query.OrderByDescending(b => b.DataAposta);
