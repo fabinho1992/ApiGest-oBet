@@ -39,18 +39,19 @@ namespace App_Bets.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBilhete([FromBody] CreateBilheteCommand command)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateBilhete([FromForm] CreateBilheteCommand command)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             var result = await _mediator.Send(command);
+
             if (!result.IsSuccess)
-            {
                 return BadRequest(result.Message);
-            }
+
             _logger.LogInformation("Bilhete criado com sucesso: {BilheteId}", result.Data);
+
             return Ok(result);
         }
 

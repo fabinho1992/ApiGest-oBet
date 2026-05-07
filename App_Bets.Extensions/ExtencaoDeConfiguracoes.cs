@@ -15,6 +15,7 @@ using App_Bets.Domain.Services.EmailServices;
 using App_Bets.Infrastructure.ApiExterna;
 using App_Bets.Infrastructure.Context;
 using App_Bets.Infrastructure.Repository;
+using App_Bets.Infrastructure.Repository.Storage;
 using App_Bets.Infrastructure.Service.Identity;
 using App_Bets.Infrastructure.Services.AuthService;
 using App_Bets.Infrastructure.Services.AuthService.TokenGeracao;
@@ -193,6 +194,13 @@ namespace App_Bets.Extensions
             );
 
             return services;
+        }
+
+        public static IServiceCollection AddSupabaseStorage(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SupabaseStorageOptions>(configuration.GetSection("SupabaseStorage"));
+            services.AddHttpClient<IImagemStorageService, SupabaseImagemStorageService>();
+            return services;    
         }
 
     }

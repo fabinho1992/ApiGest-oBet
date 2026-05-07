@@ -9,7 +9,7 @@ namespace App_Bets.Domain.Modelos
 {
     public class Bilhete
     {
-        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status, MercadoEnum mercado, DateTime? dataAposta = null)
+        public Bilhete(double odd, double valorApostado, TipoBanca tipoBanca, StatusEnum status, MercadoEnum mercado, DateTime? dataAposta = null, string? imagemUrl = null)
         {
             Odd = odd;
             ValorApostado = valorApostado;
@@ -19,6 +19,7 @@ namespace App_Bets.Domain.Modelos
             ValorRetornado = CalcularValorRetorno();
             Mercado = mercado;
             DataAposta = dataAposta ?? DateTime.UtcNow;
+            ImagemUrl = imagemUrl;
         }
 
         public Guid Id { get; private set; }
@@ -31,6 +32,7 @@ namespace App_Bets.Domain.Modelos
         public double ValorApostado { get; private set; }
         public double ValorRetornado { get; private set; }
         public DateTime? DataAposta { get; private set; }
+        public string? ImagemUrl { get; private set; }
         public Usuario? Usuario { get; set; }
 
 
@@ -65,6 +67,11 @@ namespace App_Bets.Domain.Modelos
                 StatusEnum.Perdida => -ValorApostado,
                 _ => 0
             };
+        }
+
+        public void AtualizarImagem(string? imagemUrl)
+        {
+            ImagemUrl = imagemUrl;
         }
 
     }

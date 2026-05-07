@@ -16,7 +16,7 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
         private readonly Mock<ILogger<CreateBilheteHandler>> _loggerMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IUsuarioContext> _usuarioContextMock;
-
+        private readonly Mock<IImagemStorageService> _IImagemStorageService;    
         private readonly Mock<IBilheteRepository> _bilheteRepositorioMock;
         private readonly Mock<IUsuarioRepositorio> _usuarioRepositorioMock;
 
@@ -28,7 +28,7 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
             _loggerMock = new Mock<ILogger<CreateBilheteHandler>>();
             _mapperMock = new Mock<IMapper>();
             _usuarioContextMock = new Mock<IUsuarioContext>();
-
+            _IImagemStorageService = new Mock<IImagemStorageService>(); 
             _bilheteRepositorioMock = new Mock<IBilheteRepository>();
             _usuarioRepositorioMock = new Mock<IUsuarioRepositorio>();
 
@@ -39,7 +39,8 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
                 _unitOfWorkMock.Object,
                 _loggerMock.Object,
                 _mapperMock.Object,
-                _usuarioContextMock.Object
+                _usuarioContextMock.Object,
+                _IImagemStorageService.Object
             );
         }
 
@@ -60,7 +61,7 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("Usuário não autenticado", result.Message);
+            Assert.Equal("Usuário não encontrado", result.Message);
 
             _bilheteRepositorioMock.Verify(x => x.Add(It.IsAny<Bilhete>()), Times.Never);
             _unitOfWorkMock.Verify(x => x.Commit(), Times.Never);
@@ -207,14 +208,15 @@ namespace App_Bets.Tests.Application.Commands.CommandsBilhetes
         double odd = 2.0,
         double valorApostado = 100)
         {
-            return new CreateBilheteCommand(
-                odd,
-                valorApostado,
-                TipoBanca.Bingo,
-                status,
-                CasaAposta.Betano,
-                MercadoEnum.Gols
-            );
+            return new CreateBilheteCommand()
+            {
+                Odd = odd,
+                ValorApostado = valorApostado,
+                TipoBanca = TipoBanca.Bingo,
+                StatusEnum = status,
+                CasaAposta = CasaAposta.Betano,
+                Mercado = MercadoEnum.Gols
+            };
         }
 
         private static Usuario CriarUsuarioFake()

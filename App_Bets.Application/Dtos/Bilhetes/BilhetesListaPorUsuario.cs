@@ -19,5 +19,6 @@ namespace App_Bets.Application.Dtos.Bilhetes
         public double ValorApostado { get; private set; } 
         public double ValorRetornado { get; private set; }
         public DateTime DataAposta { get; private set; }
+        public string? ImagemUrl { get; set; }
     }
 }

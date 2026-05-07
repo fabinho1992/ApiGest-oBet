@@ -50,6 +50,10 @@ namespace App_Bets.Infrastructure.Configuracao
                 .HasConversion<string>()
                 .IsRequired();
 
+            builder.Property(b => b.ImagemUrl)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
             builder.Property(b => b.CasaAposta)
                 .HasConversion<string>()
                 .IsRequired();

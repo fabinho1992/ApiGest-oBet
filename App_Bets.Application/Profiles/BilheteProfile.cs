@@ -2,11 +2,6 @@
 using App_Bets.Application.Dtos.Bilhetes;
 using App_Bets.Domain.Modelos;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App_Bets.Application.Profiles
 {
