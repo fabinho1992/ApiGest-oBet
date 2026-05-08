@@ -257,6 +257,9 @@ namespace App_Bets.Infrastructure.Repository
             var totalPerdidas = await bilhetes
                 .CountAsync(b => b.Status == StatusEnum.Perdida);
 
+            var totalPendentes = await bilhetes
+                .CountAsync(b => b.Status == StatusEnum.Pendente);
+
             var lucroTotal = await bilhetes
                 .Where(b => b.Status == StatusEnum.Ganha)
                 .SumAsync(b => b.ValorRetornado - b.ValorApostado);
@@ -272,6 +275,7 @@ namespace App_Bets.Infrastructure.Repository
             {
                 TotalGanhas = totalGanhas,
                 TotalPerdidas = totalPerdidas,
+                TotalPendentes = totalPendentes,
                 Lucro = lucroTotal,
                 TotalInvestido = totalInvestido,
                 Prejuizo = prejuizoTotal

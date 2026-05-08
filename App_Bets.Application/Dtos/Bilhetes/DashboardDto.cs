@@ -10,6 +10,7 @@ namespace App_Bets.Application.Dtos.Bilhetes
     {
         public int TotalGanhas { get; set; }
         public int TotalPerdidas { get; set; }
+        public int TotalPendentes { get; set; }
         public double Lucro { get; set; }
         public double Prejuizo { get; set; }
         public double TotalInvestido { get; set; }

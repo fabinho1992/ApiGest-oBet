@@ -38,6 +38,7 @@ namespace App_Bets.Application.Queries.Bilhetes.BilhetesDashboard
             {
                 TotalGanhas = dashboard.TotalGanhas,
                 TotalPerdidas = dashboard.TotalPerdidas,
+                TotalPendentes = dashboard.TotalPendentes,
                 Lucro = dashboard.Lucro,
                 Prejuizo = dashboard.Prejuizo,
                 TotalInvestido = dashboard.TotalInvestido,

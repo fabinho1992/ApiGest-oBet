@@ -11,6 +11,7 @@ namespace App_Bets.Domain.Modelos
     {
         public int TotalGanhas { get; set; }
         public int TotalPerdidas { get; set; }
+        public int TotalPendentes { get; set; }
         public double Lucro { get; set; }
         public double Prejuizo { get; set; }
         public double TotalInvestido { get; set; }
