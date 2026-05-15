@@ -4,6 +4,7 @@ using App_Bets.Application.Commands.CommandsBilhetes.EditarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.ResetarBilhetes;
 using App_Bets.Application.Commands.CommandsBilhetes.UpdateStatus;
 using App_Bets.Application.Dtos;
+using App_Bets.Application.Dtos.Bilhetes;
 using App_Bets.Application.Queries.Bilhetes.BilhetesCasaAposta;
 using App_Bets.Application.Queries.Bilhetes.BilhetesDashboard;
 using App_Bets.Application.Queries.Bilhetes.BilhetesFiltrados;
@@ -15,6 +16,7 @@ using App_Bets.Application.Queries.Bilhetes.BilhetesPorUsuario;
 using App_Bets.Application.Queries.Bilhetes.ExportarBilhetesPdf;
 using App_Bets.Application.Queries.Bilhetes.ResumoCasaAposta;
 using App_Bets.Application.Queries.Usuario.UsuarioPeloCpf;
+using App_Bets.Application.Services.IAClaude;
 using App_Bets.Domain.Enuns;
 using App_Bets.Domain.Modelos;
 using MediatR;
@@ -32,10 +34,16 @@ namespace App_Bets.Api.Controllers
     {
         private readonly ILogger<BilheteController> _logger;
         private readonly IMediator _mediator;
-        public BilheteController(ILogger<BilheteController> logger, IMediator mediator)
+        private readonly IClaudeAnaliseBilheteService _claudeAnaliseBilheteService;
+
+        public BilheteController(
+            ILogger<BilheteController> logger,
+            IMediator mediator,
+            IClaudeAnaliseBilheteService claudeAnaliseBilheteService)
         {
             _logger = logger;
             _mediator = mediator;
+            _claudeAnaliseBilheteService = claudeAnaliseBilheteService;
         }
 
         [HttpPost]
@@ -283,6 +291,67 @@ namespace App_Bets.Api.Controllers
             var nomeArquivo = $"relatorio-bilhetes-{DateTime.Now:yyyyMMdd-HHmmss}.pdf";
 
             return File(result.Data, "application/pdf", nomeArquivo);
+        }
+
+        [HttpPost("analisar-imagem")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AnalisarImagem(IFormFile imagem, CancellationToken cancellationToken)
+        {
+            if (imagem is null || imagem.Length == 0)
+                return BadRequest("Imagem inválida ou não enviada.");
+
+            BilheteExtraidoDto dadosExtraidos;
+
+            try
+            {
+                dadosExtraidos = await _claudeAnaliseBilheteService.AnalisarImagemAsync(imagem, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao analisar imagem com Claude.");
+                return BadRequest("Não foi possível analisar a imagem.");
+            }
+
+            imagem.OpenReadStream().Position = 0;
+
+            var command = new CreateBilheteCommand
+            {
+                Odd = dadosExtraidos.Odd ?? 0,
+                ValorApostado = dadosExtraidos.ValorApostado ?? 0,
+                StatusEnum = StatusEnum.Pendente,
+                CasaAposta = ParseEnum<CasaAposta>(dadosExtraidos.CasaAposta) ?? CasaAposta.Betano,
+                Mercado = ParseEnum<MercadoEnum>(dadosExtraidos.Mercado) ?? MercadoEnum.ResultadoFinal,
+                DataAposta = dadosExtraidos.DataAposta ?? DateTime.UtcNow,
+                Imagem = imagem,
+
+                 // Lógica do TipoBanca automática!
+                TipoBanca = dadosExtraidos.Odd <= 2.0
+                        ? TipoBanca.Segura
+                        : TipoBanca.Bingo
+            };
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            _logger.LogInformation("Bilhete criado via análise de imagem: {BilheteId}", result.Data);
+
+            return Ok(ResultViewModel<BilheteAnaliseImagemResponse>.Success(new BilheteAnaliseImagemResponse
+            {
+                BilheteId = result.Data,
+                DadosExtraidos = dadosExtraidos
+            }));
+        }
+
+        private static TEnum? ParseEnum<TEnum>(string? valor) where TEnum : struct, Enum
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+                return null;
+
+            return Enum.TryParse<TEnum>(valor, ignoreCase: true, out var resultado)
+                ? resultado
+                : null;
         }
 
         [HttpPost("calcular-odd")]

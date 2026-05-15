@@ -6,6 +6,7 @@ using App_Bets.Application.FluentValidation;
 using App_Bets.Application.FluentValidation.Bilhete;
 using App_Bets.Application.FluentValidation.Usuario;
 using App_Bets.Application.ServiceEmail.EmailServices;
+using App_Bets.Application.Services.IAClaude;
 using App_Bets.Application.Services.EmailServices;
 using App_Bets.Domain.IRepositorio;
 using App_Bets.Domain.IServices.Autentication;
@@ -72,6 +73,7 @@ namespace App_Bets.Extensions
             services.AddScoped<IAddRole, AddRole>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISendEmail, SendEmail>();
+            services.AddScoped<IClaudeAnaliseBilheteService, ClaudeAnaliseBilheteService>();
             //services.AddHttpClient<IEmailService, EmailService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
