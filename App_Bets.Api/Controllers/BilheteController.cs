@@ -370,5 +370,54 @@ namespace App_Bets.Api.Controllers
                 OddFinal = Math.Round(oddFinal, 2)
             }));
         }
+
+        [HttpPost("analisar-imagem-preview")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AnalisarImagemPreview(IFormFile imagem, CancellationToken cancellationToken)
+        {
+            if (imagem is null || imagem.Length == 0)
+                return BadRequest("Imagem inválida ou não enviada.");
+
+            BilheteExtraidoDto dadosExtraidos;
+
+            try
+            {
+                dadosExtraidos = await _claudeAnaliseBilheteService.AnalisarImagemAsync(imagem, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao analisar imagem com Claude.");
+                return BadRequest("Não foi possível analisar a imagem.");
+            }
+
+            // Retorna os dados extraídos SEM criar o bilhete
+            return Ok(ResultViewModel<BilheteExtraidoDto>.Success(dadosExtraidos));
+        }
+
+        [HttpPost("confirmar-imagem")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> ConfirmarImagem(
+        [FromForm] ConfirmarBilheteImagemRequest request,
+        CancellationToken cancellationToken)
+            {
+                var command = new CreateBilheteCommand
+                {
+                    Odd = request.Odd,
+                    ValorApostado = request.ValorApostado,
+                    StatusEnum = StatusEnum.Pendente,
+                    CasaAposta = request.CasaAposta,
+                    Mercado = request.Mercado,
+                    DataAposta = request.DataAposta.ToUniversalTime(),
+                    Imagem = request.Imagem,
+                    TipoBanca = request.Odd <= 2.0 ? TipoBanca.Segura : TipoBanca.Bingo
+                };
+
+                var result = await _mediator.Send(command, cancellationToken);
+
+                if (!result.IsSuccess)
+                    return BadRequest(result.Message);
+
+                return Ok(ResultViewModel<Guid>.Success(result.Data));
+            }
     }
 }
