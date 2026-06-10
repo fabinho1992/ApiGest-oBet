@@ -67,6 +67,10 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+var cultureInfo = new System.Globalization.CultureInfo("en-US");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
